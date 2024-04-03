@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            background-color: #ccc; /* Placeholder background color */
+            /* Add CSS for displaying user profile image */
+        }
+        .bio-input,
+        .nickname-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            /* Add additional styling for inputs if needed */
+        }
+        .save-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .save-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Profile Update</h1>
+            <a href="#" onclick="history.back();">Back</a>
+        </div>
+        {% for data in profile %}
+        <div class="profile-section">
+            <div class="profile-image"></div>
+            <input type="file" accept="image/*" onchange="previewImage(event)">
+            <textarea class="bio-input" placeholder="Bio">{{data.bio}}</textarea>
+            <input type="text" class="nickname-input" value="{{data.nickname}}" placeholder="Nickname">
+            <button class="save-button">Save</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+       var profileImage = document.querySelector('.profile-image');
+  if (profileImage) {  // Check if element exists
+    profileImage.style.backgroundImage = 'url({{ profile.image.url }})';
+  }
+        // Function to preview selected image
+        function previewImage(event) {
+            var preview = document.querySelector('.profile-image');
+            var file = event.target.files[0];
+            var reader = new FileReader();
+
+            reader.onloadend = function () {
+                preview.style.backgroundImage = "url(" + reader.result + ")";
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.backgroundImage = null;
+            }
+        }
+    </script>
+</body>
+</html>
