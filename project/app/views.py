@@ -1,10 +1,10 @@
-from django.shortcuts import render , redirect
-from django.http import HttpResponse , JsonResponse
+from django.shortcuts import get_object_or_404, render , redirect
+from django.http import HttpResponse, HttpResponseRedirect , JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile
+from .models import Profile , Post , Follow , Likes , Comments , Share
 
 def redirect_authenticated_user(view_func):
     def wrapper(request, *args, **kwargs):
@@ -25,22 +25,28 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('pass')
 
-        user = authenticate(request , username=username,password=password)
-        if user != None:
-            login(request,user)
-            return redirect('profile-settings')
+        print(password)
+
+        if User.objects.filter(username=username).exists():
+
+            user = authenticate(request,username=username,password=password)
+            if user != None:
+
+                login(request,user)
+                return redirect('profile-settings')
+            else:
+                messages.error(request,'Wrong Password !')
+                return redirect('login')
         else:
-            messages.error(request,'Invalid credentials')
-            return redirect('login_view')
+            messages.error(request,'Wrong username !')
+            return redirect('login')
+            
+
     else:
         return render(request , 'login.html')
 
 @redirect_authenticated_user
 def signup(request):
-
-    if request.user.is_authenticated():
-        return redirect('feed')
-
     if request.method == 'POST':
 
         username = request.POST.get('username')
@@ -69,25 +75,236 @@ def signup(request):
 
 @login_required
 def profile_settings(request):
-    profile = Profile.objects.filter(user=request.user)
-    return render(request , 'profile_settings.html', {'profile':profile})
+    profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        profile = Profile.objects.get(user=request.user)
+
+        
+        nickname = request.POST.get('nickname')
+        bio = request.POST.get('bio')
+
+        if 'profile-image' in request.FILES:
+            image = request.FILES['profile-image']
+            profile.profile_image = image
+
+
+        profile.nickname = nickname
+        profile.bio = bio
+
+        profile.save()
+
+        return redirect('feed')
+    else:
+        return render(request , 'profile_settings.html', {'profile':profile})
 
 @login_required
 def feed(request):
-    return HttpResponse('feed view')
+    posts = Post.objects.all()
+    profile = Profile.objects.all()
+
+    uPost = []
+
+    followers = []
+    follower = Follow.objects.filter(follower=request.user)
+    for follow in follower:
+        followers.append(follow.following)
+
+    for post in posts:
+        post.likes = Likes.objects.filter(post=post).count()
+        post.shares = Share.objects.filter(post=post).count()
+        post.comments = Comments.objects.filter(post=post).count()
+        post.comments_data = Comments.objects.filter(post=post)
+
+        if post.user in followers:
+            uPost.append(post)
+
+    context = {
+        'posts':uPost,
+        'profile':profile
+    }
+    return render(request,'feed.html',context)
 
 @login_required
-def profile(request):
-    return HttpResponse('profile view')
+def profile(request,username):
+    user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user)
 
+    #if user = current user 
+    current_user = False
+    if user == request.user:
+        current_user = True
+
+    #follwers section 
+    followers = Follow.objects.filter(following=user).count()
+    following = Follow.objects.filter(follower=user).count()
+    is_following = Follow.objects.filter(follower=request.user , following=user).exists()
+
+    posts = user.post_set.all()
+    for post in posts:
+
+        post.likes = Likes.objects.filter(post=post)
+        post.comments = Comments.objects.filter(post=post)
+        post.share = Share.objects.filter(post=post)
+
+        post.likes_count = Likes.objects.filter(post=post).count()
+        post.comments_count = Comments.objects.filter(post=post).count()
+        post.share_count = Share.objects.filter(post=post).count()
+
+    context = {
+        'profile':profile,
+        'posts': posts,
+        'followers': followers,
+        'following': following,
+        'current_user':current_user,
+        'is_following': is_following,
+    }
+    return render(request,'profile.html',context)
+
+@login_required
 def logout_view(request):
     logout(request)
-    return HttpResponse('Logout success !')
+    return redirect('login')
 
 def custom_404_view(request, exception):
     return render(request, '404.html', status=404)
 
+@login_required
+def follow(request,username):
+    profile_user = get_object_or_404(User,username=username)
+    follower = request.user
+    Follow.objects.create(follower=follower,following=profile_user)
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def unfollow(request,username):
+    profile_user = get_object_or_404(User,username=username)
+    follower = request.user
+    Follow.objects.filter(follower=follower,following=profile_user).delete()
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def upload_post(request):
+        caption = request.POST.get('caption')
+        file = request.FILES['file']
+        post_type = request.POST.get('content_type')
+        if post_type == "image":
+            Post.objects.create(user=request.user,image=file,caption=caption)
+        else:
+            Post.objects.create(user=request.user,video=file,caption=caption)
+     
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def explore(request):
+
+    
+    profile = Profile.objects.all()
+    following = Follow.objects.filter(follower=request.user)
+    follow_user = []
+    for i in following:
+        follow_user.append(i.following)
+    explore = []
+    for i in profile:
+        if i.user not in follow_user:
+            explore.append(i)
+    for i in explore:
+        if i.user == request.user:
+            explore.remove(i)
+    context = {
+        'profiles':explore
+    }
+    return render(request,'explore.html',context)
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def like_post(request):
+    if request.method == 'POST':
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # This is an AJAX request
+            post_id = request.POST.get('post_id')
+            post = Post.objects.get(pk=post_id)
+            user = request.user
+
+            # Check if the user has already liked the post
+            if Likes.objects.filter(post=post, user=user).exists():
+                # Unlike the post
+                Likes.objects.filter(post=post, user=user).delete()
+            else:
+                # Like the post
+                Likes.objects.create(post=post, user=user)
+
+            # Get updated like count for the post
+            like_count = Likes.objects.filter(post=post).count()
+
+            return JsonResponse({'likes': like_count})
+        else:
+            # Handle non-AJAX request
+            return JsonResponse({'error': 'Invalid request'})
+    else:
+        # Handle non-POST request
+        return JsonResponse({'error': 'Invalid request'})
 
 
+@csrf_exempt
+def comment_post(request):
+    if request.method == 'POST':
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # This is an AJAX request
+            post_id = request.POST.get('post_id')
+            comment_content = request.POST.get('comment')
+            post = Post.objects.get(pk=post_id)
+            user = request.user
+
+            # Create a new comment for the post
+            Comments.objects.create(post=post, user=user, content=comment_content)
+
+            # Get updated comment count for the post
+            comment_count = Comments.objects.filter(post=post).count()
+
+            return JsonResponse({'comments': comment_count})
+        else:
+            # Handle non-AJAX request
+            return JsonResponse({'error': 'Invalid request'})
+    else:
+        # Handle non-POST request
+        return JsonResponse({'error': 'Invalid request'})
+
+@csrf_exempt
+def share_post(request):
+    if request.method == 'POST':
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # This is an AJAX request
+            post_id = request.POST.get('post_id')
+            post = Post.objects.get(pk=post_id)
+            user = request.user
+
+            # Create a new share for the post
+            Share.objects.create(post=post, user=user)
+
+            # Get updated share count for the post
+            share_count = Share.objects.filter(post=post).count()
+
+            return JsonResponse({'shares': share_count})
+        else:
+            # Handle non-AJAX request
+            return JsonResponse({'error': 'Invalid request'})
+    else:
+        # Handle non-POST request
+        return JsonResponse({'error': 'Invalid request'})
+
+
+# views.py
+
+from django.http import HttpResponseNotFound
+
+def handle_invalid_endpoint(request, undefined_path):
+    message = f"Endpoint '{undefined_path}' not found."
+    return HttpResponseNotFound(message)
+
+# Similarly, create views for commenting and sharing posts
 
 # Create your views here.s

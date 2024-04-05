@@ -62,29 +62,48 @@
         .save-button:hover {
             background-color: #0056b3;
         }
+        .cont{
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>Profile Update</h1>
-            <a href="#" onclick="history.back();">Back</a>
+            <a href="feed">skip</a>
         </div>
-        {% for data in profile %}
-        <div class="profile-section">
-            <div class="profile-image"></div>
-            <input type="file" accept="image/*" onchange="previewImage(event)">
-            <textarea class="bio-input" placeholder="Bio">{{data.bio}}</textarea>
-            <input type="text" class="nickname-input" value="{{data.nickname}}" placeholder="Nickname">
-            <button class="save-button">Save</button>
-        </div>
-        {% endfor %}
+     
+       
+        <form method="post" action="profile-settings" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="profile-section">
+                <div class="profile-image"></div>
+                <input name="profile-image" type="file" accept="image/*" onchange="previewImage(event)">
+                <div class="cont">
+                    <h4>Nickname : </h4>
+                    <input name="nickname" type="text" class="nickname-input" value="{{profile.nickname}}" placeholder="Nickname">
+                </div>
+                <div class="cont">
+                    <h4>Bio : </h4>
+                    <textarea name="bio" class="bio-input" placeholder="Bio">{{profile.bio}}</textarea>
+                </div>
+                <button type="submit" class="save-button">Save</button>
+            </div>
+        </form>
+      
+      
     </div>
 
     <script>
        var profileImage = document.querySelector('.profile-image');
   if (profileImage) {  // Check if element exists
-    profileImage.style.backgroundImage = 'url({{ profile.image.url }})';
+    profileImage.style.backgroundImage = 'url({{ profile.profile_image.url }})';
+    profileImage.style.backgroundSize = 'cover';
+    profileImage.style.backgroundRepeat = 'no-repeat';
+    profileImage.style.backgroundPosition = 'center';
   }
         // Function to preview selected image
         function previewImage(event) {

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    
+    <style>
+        /* Basic styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .profile-header {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .profile-info {
+            flex-grow: 1;
+        }
+        .profile-info h2 {
+            margin: 0;
+        }
+        .profile-info p {
+            margin: 5px 0;
+        }
+        .posts {
+            margin-top: 20px;
+        }
+        .post {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-content img,video{
+            width: 250px;
+            height: 250px;
+        }
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Profile header -->
+        <a href='/feed'><button>Home</button></a><br><br>
+
+        <div class="profile-header">
+            <img src="{{ profile.profile_image.url }}" alt="Profile Image">
+            <div class="profile-info">
+                <h2>{{ profile.nickname }}</h2>
+                <p>{{ profile.bio }}</p>
+                <p><strong>Followers:</strong> {{ followers }}</p>
+                <p><strong>Following:</strong> {{ following }}</p>
+            </div>
+            <div class="header-section-2">
+
+                {% if current_user %}
+                    <a href="/profile-settings"><button>Settings</button></a>
+                    <button id="open-upload-modal">Upload</button>
+
+                {% else %}
+                    {% if is_following %}
+                        <form action="{% url 'unfollow' username=profile.user.username%}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Unfollow</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'follow' username=profile.user.username%}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Follow</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Posts -->
+        <div class="posts" >
+            <h3>Posts</h3>
+            {% for post in posts %}
+            <div class="post">
+                
+                <div class="post-content">
+                    {% if post.image %}
+                     <img src="{{ post.image.url }}" alt="Post Image">
+                     <p>{{post.image.content_type}}</p>
+                    {% endif %}
+
+                    {% if post.video %}
+                      <video controls>
+                        <source src="{{ post.video.url }}" type="{{ post.file.content_type }}">
+                      </video>
+                      <p>{{post.video.content_type}}</p>
+                    {% endif %}
+                  
+                    <p>{{ post.caption }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Pop up Post views -->
+            <div class="post-container" style="display: none;">
+                
+                <img class="left-arrow" src="{% static 'images/left-arrow.png' %}" alt="left-arrow">
+                <button id="left-arrow"><</button>
+                <span id="current-post-index" style="display: none;">0</span>
+            {% for post in posts %}
+            <div class="post-view" style="display: none;">
+                <div class="post-image-container">
+
+                    {% if post.image %}
+                        <img src="{{post.image.url}}" alt="">
+                    {% endif %}
+
+                    {% if post.video %}
+                        <video src="{{post.video.url}}" controls></video>
+                    {% endif %}
+
+                </div>
+                <div class="second-container">
+                    <div class="profile-container">
+
+                        <div class="profile-user">
+                            <img src="{{post.user.profile.profile_image.url}}">
+                            <a href="{% url 'profile' username=post.user.username%}">{{post.user.username}}</a>
+                        </div>
+                        <p>{{post.caption}}</p>
+
+                    </div>
+                    <h3>Comments <span id="comment-count-{{post.id}}">{{post.comments_count}}</span</h3>
+                    <div class="comment-container">
+                       
+
+                        <!--comments -->
+                        {% for comments in post.comments %}
+                        <div class="comment">
+
+                            <div class="profile">
+                                <div class="comment-profile-section">
+                                    <img src="{{comments.user.profile.profile_image.url}}">
+                                    <a href="{% url 'profile' username=comments.user.username %}">{{comments.user.username}}</a>
+                                    <p>{{comments.time_stamp}}</p>
+                                </div>
+                            </div>
+                            <p>{{comments.content}}</p>
+                        </div>
+                        {% endfor %}
+
+
+                        
+                    </div>
+                    <div class="write-comment-container">
+                        <input id="new-comment-{{post.id}}" type="text">
+                        <button onclick="commentPost({{post.id}},'{{csrf_token}}')" >Post</button>
+                    </div>
+
+                    <hr>
+                    <div class="action-buttons-container">
+                        <button onclick="likePost({{post.id}},'{{ csrf_token }}')">Like <span id="likes-count-{{post.id}}">{{post.likes_count}}</span></button>
+                        <button onclick="sharePost({{post.id}},'{{csrf_token}}')">Share <span id="share-count-{{post.id}}">{{post.share_count}}</span></button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <img class="right-arrow" src="{% static 'images/right-arrow.jpg' %}" alt="right-arrow">
+            <button id="right-arrow">></button>
+            </div>
+            
+    </div>
+    </div>
+
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <center>
+            <form action="/upload-post" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p>Select Content Type:</p>
+                <input type="radio" id="image" name="content_type" value="image" checked>
+                <label for="image">Image</label>
+                <input type="radio" id="video" name="content_type" value="video">
+                <label for="video">Video</label>
+                <br>
+        
+                <div id="file_upload">
+                    <label for="file">File:</label>
+                    <input type="file" id="file" name="file" accept="">  </div>
+
+                    <div>
+                        <label for="caption">Caption:</label>
+                        <input type="text"  name="caption" >  </div>
+                <br>
+                <button type="submit">Upload</button>
+            </form>
+        
+        
+          </center>
+        </div>
+      </div>
+      
+      
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="{% static 'js/profile.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore</title>
+    <link rel="stylesheet" href="{% static 'css/explore.css' %}">
+</head>
+<body>
+
+    <a href="/feed"><button>Home</button></a>
+
+    <div class="search">
+        <input type="search">
+        <button>Search</button>
+    </div>
+
+    {% for profile in profiles %}
+    <div class="container">
+        <img src="{{profile.profile_image.url}}" alt="">
+        <p><a href="{% url 'profile' username=profile.user.username %}">{{profile.user.username}}</a></p>
+        <a href="{% url 'profile' username=profile.user.username %}"><button>View</button></a>
+    </div>
+    {% endfor %}
+</body>
+</html>
