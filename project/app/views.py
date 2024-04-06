@@ -187,13 +187,29 @@ def unfollow(request,username):
 
 @login_required
 def upload_post(request):
-        caption = request.POST.get('caption')
-        file = request.FILES['file']
-        post_type = request.POST.get('content_type')
-        if post_type == "image":
-            Post.objects.create(user=request.user,image=file,caption=caption)
+        
+     
+        if request.FILES['file']:
+            
+            file = request.FILES['file']
+            post_type = request.POST.get('content_type')
+
+            if request.POST.get('caption'):
+                caption = request.POST.get('caption')
+                
+                if post_type == "image":
+                    Post.objects.create(user=request.user,image=file,caption=caption)
+                else:
+                    Post.objects.create(user=request.user,video=file,caption=caption)
+            else:
+                  
+                if post_type == "image":
+                    Post.objects.create(user=request.user,image=file)
+                else:
+                    Post.objects.create(user=request.user,video=file)
+            
         else:
-            Post.objects.create(user=request.user,video=file,caption=caption)
+            messages.info(request,'No file Selected !')
      
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -298,13 +314,3 @@ def share_post(request):
 
 
 # views.py
-
-from django.http import HttpResponseNotFound
-
-def handle_invalid_endpoint(request, undefined_path):
-    message = f"Endpoint '{undefined_path}' not found."
-    return HttpResponseNotFound(message)
-
-# Similarly, create views for commenting and sharing posts
-
-# Create your views here.s

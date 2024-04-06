@@ -20,5 +20,4 @@ urlpatterns = [
     path('comment-post/',views.comment_post,name='comment-post'),
     path('share-post/',views.share_post,name='share-post'),
 
-    path('<path:undefined_path>', views.handle_invalid_endpoint),
-]
+   ]
