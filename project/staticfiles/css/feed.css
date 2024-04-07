@@ -1,0 +1,149 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.suggestion-module {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+}
+.story-section {
+    margin-top: 20px;
+    display: flex;
+    overflow-x: auto;
+}
+.story {
+    flex: 0 0 auto;
+    margin-right: 10px;
+    /* Additional styles for individual story items */
+}
+.posts {
+    margin-top: 20px;
+}
+.post {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    /* Additional styles for individual post items */
+}
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.post-header img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.post-header h3 {
+    margin: 0;
+}
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* Media queries for responsiveness */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    .suggestion-module {
+        position: static;
+        margin-bottom: 20px;
+    }
+    .story-section {
+        flex-wrap: nowrap;
+    }
+    .story {
+        margin-right: 5px;
+    }
+}
+.post-content img,video{
+    width: 100%;
+    height: 400px;
+}
+
+.dropdown {
+    position: fixed;
+    top: 20px;
+    right: 100px;
+    display: inline-block;
+
+  }
+
+.dropdown img{
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid black;
+    margin-bottom:20px ;
+}
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .show {
+    display: block;
+  }
+
+
+.comments {
+    margin-top: 20px;
+}
+
+.comment {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.user-image img {
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    border-radius: 50%; /* To make the image round */
+    margin-right: 10px;
+}
+
+.comment-content {
+    flex: 1; /* Take remaining space */
+}
+
+.comment-content p {
+    margin: 0;
+}
+
+.comment-content .date {
+    color: #999; /* Color for date */
+    font-size: 0.8em; /* Smaller font size for date */
+}

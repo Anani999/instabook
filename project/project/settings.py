@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-oi3yo(-!o9@qoihcel3+-sf%krurg^8*%!(pwfppf_9881k5)^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Application definition
 
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'app',
 ]
 
-
+ALLOWED_HOSTS = ['13.235.16.179','ngpeople.online']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -138,3 +138,4 @@ LOGIN_URL = 'login'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
