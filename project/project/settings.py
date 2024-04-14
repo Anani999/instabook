@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'app',
 ]
 
-ALLOWED_HOSTS = ['13.235.16.179','ngpeople.online']
+ALLOWED_HOSTS = ['13.235.16.179','ngpeople.online','127.0.0.1','192.168.1.35','192.168.250.61']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -118,17 +118,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Define the directory where static files will be collected
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Additional locations of static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
-
 MEDIA_URL = '/media/'
+
+
+if DEBUG:
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 LOGIN_URL = 'login'
