@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <div class="left-panel">
+            <!-- You can replace this with your own image or SVG -->
+            <img src="{% static 'images/login/login.webp' %}" alt="Login Image">
+        </div>
+        <div class="right-panel">
+            <h2>Login</h2>
+            <form action="login" method="post">
+                {% if messages %}
+                    {% for message in messages %}
+                    <h3>{{message}}</h3>
+                    {% endfor %}
+                {% endif %}
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="pass" placeholder="Password" required>
+                <input type="submit" value="Login">
+            </form>
+            <a href="signup" class="login-link">Don't have an account? Sign Up</a>
+        </div>
+    </div>
+</body>
+</html>

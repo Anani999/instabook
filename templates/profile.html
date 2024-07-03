@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Profile header -->
+        <!-- <a href='/feed'><button>Home</button></a><br><br> -->
+
+        <div class="profile-header">
+            <img src="{{ profile.profile_image.url }}" alt="Profile Image">
+            <div class="profile-info">
+                <h2>{{ profile.nickname }}</h2>
+                <p>{{ profile.bio }}</p>
+                <p><strong>Followers:</strong> {{ followers }}</p>
+                <p><strong>Following:</strong> {{ following }}</p>
+                <p><strong>Posts:</strong> {{ posts_count }}</p>
+            </div>
+            <div class="header-section-2">
+                {% if current_user %}
+                    <a href="/logout" class="logout-button">Logout</a>
+                    <a href="/profile-settings"><button>Settings</button></a>
+                    <button id="open-upload-modal">Upload</button>
+                {% else %}
+                    {% if is_following %}
+                        <form action="{% url 'unfollow' username=profile.user.username %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Unfollow</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'follow' username=profile.user.username %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Follow</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Posts -->
+        <div class="posts">
+            <h3>Posts</h3>
+            {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <img src="{{ post.user.profile.profile_image.url }}" alt="User Image">
+                    <p>{{ post.user.username }}</p>
+                </div>
+                <div class="post-content">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="Post Image">
+                    {% endif %}
+                    {% if post.video %}
+                        <video controls>
+                            <source src="{{ post.video.url }}" type="video/mp4">
+                        </video>
+                    {% endif %}
+                    <p>{{ post.caption }}</p>
+                </div>
+                <div class="action-buttons-container">
+                    <button onclick="likePost({{ post.id }}, '{{ csrf_token }}')">Like <span id="likes-count-{{ post.id }}">{{ post.likes_count }}</span></button>
+                    <button onclick="sharePost({{ post.id }}, '{{ csrf_token }}')">Share <span id="share-count-{{ post.id }}">{{ post.share_count }}</span></button>
+                </div>
+                <div class="comment-container">
+                    <h3>Comments <span id="comment-count-{{ post.id }}">{{ post.comments_count }}</span></h3>
+                    {% for comment in post.comments %}
+                        <div class="comment">
+                            <div class="user-image">
+                                <img src="{{ comment.user.profile.profile_image.url }}" alt="User Image">
+                            </div>
+                            <div class="comment-content">
+                                <p><strong>{{ comment.user.username }}</strong></p>
+                                <p>{{ comment.content }}</p>
+                                <p class="date">{{ comment.time_stamp }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="write-comment-container">
+                        <input id="new-comment-{{ post.id }}" type="text">
+                        <button onclick="commentPost({{ post.id }}, '{{ csrf_token }}')">Post</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <center>
+                {% for message in messages %}
+                    <h3 style="color: red;">{{ message }}</h3>
+                {% endfor %}
+                <form action="/upload-post" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <p>Select Content Type:</p>
+                    <input type="radio" id="image" name="content_type" value="image" checked>
+                    <label for="image">Image</label>
+                    <input type="radio" id="video" name="content_type" value="video">
+                    <label for="video">Video</label>
+                    <br>
+                    <div id="file_upload">
+                        <label for="file">File:</label>
+                        <input type="file" id="file" name="file" accept="image/*,video/*">
+                    </div>
+                    <div>
+                        <label for="caption">Caption:</label>
+                        <input type="text" name="caption">
+                    </div>
+                    <br>
+                    <button type="submit">Upload</button>
+                </form>
+            </center>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+</body>
+</html>
+
+</html>
+
+
+{% endblock %}

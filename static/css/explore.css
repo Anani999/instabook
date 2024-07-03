@@ -1,0 +1,132 @@
+/* Global Styles */
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f8f9fa; /* Light gray background */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff; /* White background for the container */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); /* Softer shadow for a modern look */
+    border-radius: 10px; /* Slightly more rounded corners */
+    text-align: center;
+}
+
+/* Heading Styles */
+h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #343a40; /* Darker color for the heading */
+}
+
+/* Form Styles */
+form {
+    margin-bottom: 30px;
+}
+
+input[type="text"] {
+    padding: 12px;
+    border: 1px solid #ced4da; /* Lighter border color */
+    border-radius: 25px; /* Fully rounded corners */
+    width: 65%;
+    margin-right: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    background-color: #007bff; /* Bright blue for buttons */
+    color: #ffffff;
+    border-radius: 25px; /* Fully rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* User List Styles */
+.user-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.user-item {
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid #e9ecef; /* Very light border */
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+    margin: 15px;
+    width: calc(100% / 2 - 40px); /* Two columns layout */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-item:hover {
+    transform: translateY(-5px); /* Lift on hover */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Deeper shadow on hover */
+}
+
+.user-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 20px;
+    object-fit: cover;
+}
+
+.user-info {
+    text-align: left;
+}
+
+.user-info h3 {
+    margin: 0;
+    font-size: 20px; /* Slightly larger font */
+    color: #343a40; /* Darker text color */
+}
+
+.user-info p {
+    margin: 5px 0;
+    color: #6c757d; /* Medium gray for secondary text */
+}
+
+.user-info form, .user-info a {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.user-info button {
+    padding: 8px 15px;
+    font-size: 14px;
+    margin-right: 5px;
+    border-radius: 25px;
+}
+
+@media (max-width: 768px) {
+    .user-item {
+        width: calc(100% - 40px); /* Full width on smaller screens */
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .user-item img {
+        margin-bottom: 15px; /* More space at the bottom */
+    }
+
+    input[type="text"] {
+        width: calc(100% - 20px); /* Full width input on smaller screens */
+        margin-bottom: 10px;
+    }
+}
+
+

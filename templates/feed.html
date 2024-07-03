@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed</title>
+    <link rel="stylesheet" href="{% static 'css/feed.css' %}">
+</head>
+<body>
+    <div class="feed-container">
+        <!-- Left sidebar (optional) -->
+        <div class="left-sidebar">
+            <!-- Optional content or links -->
+        </div>
+
+
+        {% if posts  %}
+        <!-- Main content -->
+        <div class="main-content">
+
+<!--             
+            <div class="story-section">
+                
+                <div class="story">Story 1</div>
+                <div class="story">Story 2</div>
+                <div class="story">Story 3</div>
+                
+            </div> -->
+            
+            <!-- Posts -->
+            <div class="posts">
+                <!-- Add content for posts here -->
+                {% for post in posts %}
+                    <div class="post">
+                        <div class="post-header">
+                            {% if profile %}
+                                <img src="{{ post.user.profile.profile_image.url }}" alt="Profile Image">
+                            {% endif %}
+                            <h3><a href="{% url 'profile' username=post.user.username %}">{{ post.user.username }}</a></h3>
+                        </div>
+                        <div class="post-content">
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" alt="Post Image">
+                            {% elif post.video %}
+                                <video controls>
+                                    <source src="{{ post.video.url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% endif %}
+                        </div>
+                        <div class="caption">
+                            {{ post.caption }}
+                        </div>
+                        <div class="post-actions">
+                            <p>{{ post.content }}</p>
+                            <div class="post-stats">
+                                <p>Likes: <span id="like-count-{{ post.id }}">{{ post.likes }}</span></p>
+                                <p>Comments: <span id="comment-count-{{ post.id }}">{{ post.comments }}</span></p>
+                                <p>Shares: <span id="share-count-{{ post.id }}">{{ post.shares }}</span></p>
+                            </div>
+                            <div class="post-actions">
+                                <button onclick="likePost({{ post.id }}, '{{ csrf_token }}')">Like</button>
+                                <textarea id="comment-text-{{ post.id }}"></textarea>
+                                <button onclick="commentPost({{ post.id }})">Comment</button>
+                                <button onclick="sharePost({{ post.id }})">Share</button>
+                            </div>
+                            <br><hr><br>
+                            <!-- Comments view -->
+                            <div class="comments">
+                                {% for comment in post.comments_data %}
+                                    <div class="comment">
+                                        <!-- User's image -->
+                                        <div class="user-image">
+                                            <img src="{{ comment.user.profile.profile_image.url }}" alt="User Image">
+                                        </div>
+                                        <!-- Comment content -->
+                                        <div class="comment-content">
+                                            <p><strong>{{ comment.user.username }}</strong></p>
+                                            <p>{{ comment.content }}</p>
+                                            <p class="date">{{ comment.time_stamp }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+
+        {% if suggested_users  %}
+        <!-- User suggestions -->
+        <div class="suggestions">
+            <h3>Suggestions for you</h3>
+            {% for user in suggested_users %}
+                <div class="suggested-user">
+                    <img src="{{ user.profile.profile_image.url }}" alt="Profile Image">
+                    <div class="user-info">
+                        <h4><a href="{% url 'profile' username=user.username %}">{{ user.username }}</a></h4>
+                        <form action="{% url 'follow' username=user.username %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Follow</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{% static 'js/feed.js' %}"></script>
+</body>
+</html>
+{% endblock %}

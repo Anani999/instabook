@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore{% endblock %}
+
+{% block content %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore</title>
+    <link rel="stylesheet" href="{% static 'css/explore.css' %}">
+
+    <!-- fontawerosme link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+
+    <div class="container">
+        <h1>Explore Users</h1>
+        <form method="get" action="{% url 'explore' %}">
+            <input type="text" name="q" placeholder="Search by username" value="{{ request.GET.q }}">
+            <button type="submit">Search</button>
+        </form>
+
+        <div class="user-list">
+            {% for user in users %}
+            <div class="user-item">
+                <img src="{{ user.profile.profile_image.url }}" alt="{{ user.username }}">
+                <div class="user-info">
+                    <h3>{{ user.username }}</h3>
+                    <p>{{ user.profile.nickname }}</p>
+                    {% if user.id in following %}
+                    <form action="{% url 'unfollow' user.username %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Unfollow</button>
+                    </form>
+                    {% else %}
+                    <form action="{% url 'follow' user.username %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Follow</button>
+                    </form>
+                    {% endif %}
+                    <a href="{% url 'profile' user.username %}"><button>View Profile</button></a>
+                </div>
+            </div>
+            {% empty %}
+            <p>No users found.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+</html>
+
+
+{% endblock %}

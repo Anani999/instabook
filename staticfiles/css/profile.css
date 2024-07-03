@@ -1,0 +1,195 @@
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    align-items: center;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+
+  .modal-content form div{
+    width: 100%;
+    margin: 20px auto;
+  }
+  
+  /* Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* Post container start */
+  .post-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+  }
+
+  .post-view{
+    background-color: rgb(43, 43, 43);
+    display: 'none';
+    height:80%;
+    color: white;
+    width: 70%;
+    border-radius: 10px;
+    box-shadow: 4px 4px 10px grey;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .post-view .post-image-container{
+    height: 100%;
+    width: 50%;
+    border: 2px solid black;
+  }
+
+  .second-container{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px;
+  }
+
+  .profile-container{
+    padding:10px ;
+  }
+.profile-container p{
+  font-size: 20px;
+}
+  .post-image-container img,video{
+    height: 100%;
+    width: 100%;
+    border: 2px solid black;
+  }
+
+  .left-arrow ,.right-arrow{
+    width: 80px;
+    height: 100px;
+  }
+
+
+  .profile-container , .comment-container ,.write-comment-container,.action-buttons-container{
+    width: 100%;
+  }
+
+  .profile-user{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+  }
+
+  .profile-user a{
+    margin-left: 10px;
+    font-size: 30px;
+    text-decoration: none;
+  }
+
+  .profile-container img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    border: 1px solid orange;
+  }
+
+  .comment-container{
+    max-width: 95%;
+    overflow-y: auto;
+    height: 50%;
+    border: 1px solid green;
+    border-radius: 10px;
+    padding: 10px;
+  
+  }
+.comment-container .comment{
+  border: 1px solid rgb(135, 135, 135);
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+  .comment-container .comment img{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid pink;
+  }
+
+
+.comment-profile-section{
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  font-size: 20px;
+}
+
+.comment-profile-section a{
+  margin: 0 10px;
+}
+
+.comment-profile-section p{
+  font-size: 15px;
+  opacity: 70%;
+  margin-left: 10px;
+}
+
+.write-comment-container{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 10px;
+}
+
+.action-buttons-container{
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+
+.action-buttons-container button{
+  padding: 7px 15px;
+  font-size: 15px;
+}
+
+.second-container a{
+  color: white;
+  text-decoration: none;
+}
+
+.second-container a:hover{
+  color: #888;
+}
